@@ -69,11 +69,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
-        'NAME': BASE_DIR / 'db.sqlite3' if os.environ.get('DB_ENGINE') != 'django.db.backends.mysql' else os.environ.get('DB_NAME', 'portfolio_db'),
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600
+    )
 }
 
 # Password validation
@@ -97,8 +99,14 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ] if (BASE_DIR / 'static').exists() else []
 
-if not DEBUG or 'RENDER' in os.environ:
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # Media files
 MEDIA_URL = '/media/'
@@ -127,7 +135,7 @@ CORS_ALLOWED_ORIGINS = [
     origin.strip() for origin in CORS_ALLOWED_ORIGINS_ENV.split(',') if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all during local dev if needed, restrict in production
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').strip().lower() in ('true', '1', 't', 'yes')
 
 CSRF_TRUSTED_ORIGINS_ENV = os.environ.get(
     'CSRF_TRUSTED_ORIGINS',
