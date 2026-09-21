@@ -1,0 +1,27 @@
+# Root Git Ignore
+
+# Dependencies
+node_modules/
+dist/
+dist-ssr/
+env/
+venv/
+ENV/
+.env
+.env.production
+.env.local
+
+# Python / Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+*.sqlite3-journal
+db.sqlite3
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
