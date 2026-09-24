@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const Certifications = ({ certifications = [] }) => {
+const Certifications = ({ certifications = [], loading = false, error = null }) => {
   const [selectedCert, setSelectedCert] = useState(null);
 
   const getCertImage = (cert) => {
@@ -42,7 +42,27 @@ const Certifications = ({ certifications = [] }) => {
         </div>
 
         <div className="cert-grid">
-          {certifications.map((cert) => {
+          {loading && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: 'var(--gray)' }}>
+              <div className="spinner" style={{ margin: '0 auto 15px' }}></div>
+              <p>Loading certifications...</p>
+            </div>
+          )}
+
+          {!loading && error && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: '#e63946' }}>
+              <i className="fas fa-exclamation-circle" style={{ fontSize: '1.5rem', marginBottom: '10px', display: 'block' }}></i>
+              <p>Failed to load certifications. Please try refreshing or check back later.</p>
+            </div>
+          )}
+
+          {!loading && !error && certifications.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0' }}>
+              <p>No certifications available right now.</p>
+            </div>
+          )}
+
+          {!loading && !error && certifications.length > 0 && certifications.map((cert) => {
             const imgSrc = getCertImage(cert);
 
             return (
@@ -91,11 +111,6 @@ const Certifications = ({ certifications = [] }) => {
               </div>
             );
           })}
-          {certifications.length === 0 && (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0' }}>
-              <p>No certifications available right now.</p>
-            </div>
-          )}
         </div>
       </div>
 

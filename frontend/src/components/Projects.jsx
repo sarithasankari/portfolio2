@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Projects = ({ projects = [] }) => {
+const Projects = ({ projects = [], loading = false, error = null }) => {
   // Helper to resolve project image safely
   const getProjectImage = (project) => {
     if (project.image_url) return project.image_url;
@@ -21,7 +21,27 @@ const Projects = ({ projects = [] }) => {
         </div>
 
         <div className="projects-grid">
-          {projects.map((project) => {
+          {loading && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: 'var(--gray)' }}>
+              <div className="spinner" style={{ margin: '0 auto 15px' }}></div>
+              <p>Loading projects...</p>
+            </div>
+          )}
+
+          {!loading && error && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0', color: '#e63946' }}>
+              <i className="fas fa-exclamation-circle" style={{ fontSize: '1.5rem', marginBottom: '10px', display: 'block' }}></i>
+              <p>Failed to load projects. Please try refreshing or check back later.</p>
+            </div>
+          )}
+
+          {!loading && !error && projects.length === 0 && (
+            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0' }}>
+              <p>No projects available right now.</p>
+            </div>
+          )}
+
+          {!loading && !error && projects.length > 0 && projects.map((project) => {
             const tags = project.tag_list || (project.tags ? project.tags.split(',').map(t => t.trim()) : []);
             const imgSrc = getProjectImage(project);
 
@@ -76,11 +96,6 @@ const Projects = ({ projects = [] }) => {
               </div>
             );
           })}
-          {projects.length === 0 && (
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 0' }}>
-              <p>No projects available right now.</p>
-            </div>
-          )}
         </div>
       </div>
     </section>

@@ -12,8 +12,30 @@ const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 15000,
+  timeout: 60000,
 });
+
+// Automatic retry interceptor for network errors or server cold-start 5xx / timeouts
+apiClient.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const config = error.config;
+    if (!config) return Promise.reject(error);
+
+    config.__retryCount = config.__retryCount || 0;
+    const maxRetries = 2;
+    const isNetworkOr5xx = !error.response || (error.response.status >= 500 && error.response.status <= 599);
+
+    if (config.__retryCount < maxRetries && isNetworkOr5xx) {
+      config.__retryCount += 1;
+      const delay = config.__retryCount * 1200;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      return apiClient(config);
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const getProfile = async () => {
   const response = await apiClient.get('/profile/');

@@ -16,13 +16,19 @@ const Home = ({
   educations,
   certifications,
   socialLinks,
+  loadingStates = {},
+  errors = {},
 }) => {
   return (
     <main>
       <Hero profile={profile} />
       <About profile={profile} />
       <Skills skills={skills} />
-      <Projects projects={projects} />
+      <Projects
+        projects={projects}
+        loading={loadingStates.projects}
+        error={errors.projects}
+      />
       
       {/* Experience and Education Combined Timeline Section */}
       <section id="experience" className="timeline-section">
@@ -32,13 +38,25 @@ const Home = ({
             <p className="section-subtitle">My professional journey, internships, and educational background</p>
           </div>
           <div className="timeline-grid">
-            <Experience experiences={experiences} />
-            <Education educations={educations} />
+            <Experience
+              experiences={experiences}
+              loading={loadingStates.experiences}
+              error={errors.experiences}
+            />
+            <Education
+              educations={educations}
+              loading={loadingStates.educations}
+              error={errors.educations}
+            />
           </div>
         </div>
       </section>
 
-      <Certifications certifications={certifications} />
+      <Certifications
+        certifications={certifications}
+        loading={loadingStates.certifications}
+        error={errors.certifications}
+      />
       <Contact profile={profile} socialLinks={socialLinks} />
     </main>
   );
